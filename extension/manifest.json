@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "WorkTimer Link",
+  "version": "1.0.0",
+  "description": "Reports your active tab to the local WorkTimer app. All data stays on this device.",
+  "permissions": ["tabs"],
+  "host_permissions": ["http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {}
+}
