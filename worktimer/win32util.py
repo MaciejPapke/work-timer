@@ -18,7 +18,7 @@ def _exe_of_pid(pid):
         h = win32api.OpenProcess(flags, False, pid)
         try:
             path = win32process.GetModuleFileNameEx(h, 0)
-            exe = os.path.basename(path)
+            exe = os.path.basename(path).lower()
         finally:
             win32api.CloseHandle(h)
     except Exception:

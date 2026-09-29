@@ -40,15 +40,41 @@ def _fmt_ms(ms):
     return f"{s2}s"
 
 
+def _app_name(exe):
+    exe_l = (exe or "").lower()
+    for key, label in config.APP_NAMES.items():
+        if key in exe_l:
+            return label
+    return exe or "?"
+
+
+def _site_label(url):
+    if not url:
+        return ""
+    host = (urlparse(url).netloc or "").lower()
+    if host.startswith("www."):
+        host = host[4:]
+    path = (urlparse(url).path or "").lower()
+    for domain, label in config.SITE_LABELS.items():
+        if host == domain or host.endswith("." + domain):
+            if label == "Facebook" and "/messages" in path:
+                return "Messenger"
+            return label
+    return host
+
+
 def _dashboard_html(since_ts):
     rows = storage.aggregate(since_ts)
 
     by_cat = defaultdict(int)
     by_app = defaultdict(lambda: defaultdict(int))
+    by_site = defaultdict(int)
     pages = defaultdict(int)
     for app, state, cat, page, url, ms in rows:
         by_cat[cat] += ms
         by_app[app][state] += ms
+        if app.lower() in config.BROWSER_EXES and url:
+            by_site[_site_label(url)] += ms
         if page:
             pages[(app, page, url)] += ms
 
@@ -65,14 +91,20 @@ def _dashboard_html(since_ts):
             for s in ("focused", "visible", "minimized", "idle")
         )
         app_rows.append(
-            f"<tr><td>{_escape(app)}</td><td class='num'>{_fmt_ms(total)}</td>"
-            f"{cells}</tr>"
+            f"<tr><td>{_escape(_app_name(app))}</td>"
+            f"<td class='num'>{_fmt_ms(total)}</td>{cells}</tr>"
         )
     app_rows = "".join(app_rows)
 
+    site_rows = "".join(
+        f"<tr><td>{_escape(s)}</td><td class='num'>{_fmt_ms(v)}</td></tr>"
+        for s, v in sorted(by_site.items(), key=lambda kv: -kv[1])[:25]
+    )
+
     page_rows = "".join(
-        f"<tr><td>{_escape(a)}</td><td>{_escape(p)}</td>"
-        f"<td class='mono'>{_escape(u)}</td><td class='num'>{_fmt_ms(v)}</td></tr>"
+        f"<tr><td>{_escape(_app_name(a))}</td><td>{_escape(_site_label(u))}</td>"
+        f"<td>{_escape(p)}</td><td class='mono'>{_escape(u)}</td>"
+        f"<td class='num'>{_fmt_ms(v)}</td></tr>"
         for (a, p, u), v in sorted(pages.items(), key=lambda kv: -kv[1])[:50]
     )
 
@@ -93,8 +125,10 @@ def _dashboard_html(since_ts):
 <table><tr><th>Category</th><th>Time</th></tr>{cat_rows}</table>
 <h2>By app</h2>
 <table><tr><th>App</th><th>Total</th><th>Focused</th><th>Visible</th><th>Minimized</th><th>Idle</th></tr>{app_rows}</table>
+<h2>Browser sites</h2>
+<table><tr><th>Site</th><th>Time</th></tr>{site_rows}</table>
 <h2>Top pages</h2>
-<table><tr><th>App</th><th>Page</th><th>URL</th><th>Time</th></tr>{page_rows}</table>
+<table><tr><th>App</th><th>Site</th><th>Page</th><th>URL</th><th>Time</th></tr>{page_rows}</table>
 </body></html>"""
 
 

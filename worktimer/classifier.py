@@ -6,9 +6,9 @@ from . import config
 
 def classify(app, url=None):
     app_l = (app or "").lower()
-    if app_l in config.WORK_APPS:
+    if any(a in app_l for a in config.WORK_APPS):
         return config.WORK
-    if app_l in config.LEISURE_APPS:
+    if any(a in app_l for a in config.LEISURE_APPS):
         return config.LEISURE
     if app_l in config.BROWSER_EXES:
         host = (urlparse(url).netloc or "").lower() if url else ""

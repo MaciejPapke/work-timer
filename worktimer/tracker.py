@@ -29,12 +29,16 @@ class Tracker:
 
         if win32util.idle_ms() >= config.IDLE_THRESHOLD_MS:
             app = win32util.foreground_exe() or "desktop"
+            if app in config.IGNORE_EXES:
+                app = "desktop"
             key = (app, config.IDLE, None, None, config.IDLE)
             self._acc[key] += ms
             return
 
         best = {}  # exe -> best state
         for exe, state in win32util.enumerate_states():
+            if exe in config.IGNORE_EXES:
+                continue
             prio = config.STATE_PRIORITY[state]
             if exe not in best or prio > config.STATE_PRIORITY[best[exe]]:
                 best[exe] = state

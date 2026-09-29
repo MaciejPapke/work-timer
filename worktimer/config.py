@@ -39,21 +39,24 @@ IDLE = "idle"
 STATE_PRIORITY = {"focused": 3, "visible": 2, "minimized": 1}
 
 # --- Classification -------------------------------------------------------
-# Substring matches on lowercase exe name / url hostname.
+# Substring matches on the lowercase exe name / url hostname.
 WORK_APPS = (
-    "code.exe", "devenv.exe", "pycharm64.exe", "idea64.exe", "rider64.exe",
-    "eclipse.exe", "studio64.exe", "webstorm64.exe", "sublime_text.exe",
-    "notepad++.exe", "vim.exe", "nvim.exe", "postman.exe", "insomnia.exe",
-    "dbeaver.exe", "ssms.exe", "outlook.exe", "excel.exe", "winword.exe",
-    "powerpnt.exe", "onenote.exe", "teams.exe", "slack.exe", "zoom.exe",
-    "notion.exe", "obsidian.exe", "wsl.exe", "windowsterminal.exe",
-    "windows terminal.exe", "cmd.exe", "powershell.exe", "pwsh.exe",
+    "code.exe", "code - insiders", "devenv.exe", "pycharm64.exe", "idea64.exe",
+    "rider64.exe", "eclipse.exe", "studio64.exe", "webstorm64.exe",
+    "sublime_text.exe", "notepad++.exe", "vim.exe", "nvim.exe", "postman.exe",
+    "insomnia.exe", "dbeaver.exe", "ssms.exe", "outlook.exe", "excel.exe",
+    "winword.exe", "powerpnt.exe", "onenote.exe", "teams.exe", "slack.exe",
+    "claude.exe", "zoom.exe", "notion.exe", "obsidian.exe", "wsl.exe",
+    "windowsterminal.exe", "cmd.exe", "powershell.exe", "pwsh.exe",
     "putty.exe", "mstsc.exe", "git-bash.exe",
 )
 
 LEISURE_APPS = (
     "spotify.exe", "steam.exe", "steamwebhelper.exe", "discord.exe",
-    "vlc.exe", "epicgameslauncher.exe", "battle.net.exe", "minecraft.exe",
+    "vlc.exe", "epicgameslauncher.exe", "battle.net.exe", "minecraft",
+    "league", "riotclient", "valorant", "cs2", "csgo", "dota2",
+    "overwatch", "hearthstone", "wow", "fortnite", "r5apex", "genshin",
+    "rocketleague", "osu!",
 )
 
 WORK_DOMAINS = (
@@ -70,6 +73,57 @@ LEISURE_DOMAINS = (
     "disneyplus.com", "primevideo.com", "spotify.com", "9gag.com",
     "imgur.com",
 )
+
+# --- Noise filter ---------------------------------------------------------
+# System/UI executables that are never tracked (shell chrome, search, etc.).
+IGNORE_EXES = (
+    "explorer.exe", "searchhost.exe", "startmenuexperiencehost.exe",
+    "shellexperiencehost.exe", "applicationframehost.exe", "textinputhost.exe",
+    "lockapp.exe", "systemsettings.exe", "taskhostw.exe", "ctfmon.exe",
+    "dwm.exe", "sihost.exe", "runtimebroker.exe", "backgroundtaskhost.exe",
+    "gamebar.exe", "widgets.exe", "widgetservice.exe", "fontdrvhost.exe",
+    "onenotem.exe", "mobsync.exe",
+)
+
+# --- Display names --------------------------------------------------------
+# Substring of the lowercase exe -> friendly label shown in the dashboard.
+APP_NAMES = {
+    "brave.exe": "Brave", "chrome.exe": "Chrome", "msedge.exe": "Edge",
+    "firefox.exe": "Firefox", "code": "VS Code", "slack": "Slack",
+    "claude": "Claude", "discord": "Discord", "spotify": "Spotify",
+    "notion": "Notion", "obsidian": "Obsidian", "zoom": "Zoom",
+    "teams": "Teams", "outlook": "Outlook", "excel": "Excel",
+    "winword": "Word", "powerpnt": "PowerPoint", "onenote": "OneNote",
+    "postman": "Postman", "steam": "Steam",
+    "league": "League of Legends", "riotclient": "Riot Client",
+    "valorant": "Valorant", "cs2": "CS2", "csgo": "CS:GO",
+    "dota2": "Dota 2", "minecraft": "Minecraft",
+    "overwatch": "Overwatch", "hearthstone": "Hearthstone",
+    "wow": "World of Warcraft",
+}
+
+# --- Site hierarchy -------------------------------------------------------
+# Hostname -> friendly site label for the browser page breakdown.
+SITE_LABELS = {
+    "youtube.com": "YouTube", "youtu.be": "YouTube",
+    "facebook.com": "Facebook", "m.facebook.com": "Facebook",
+    "messenger.com": "Messenger",
+    "instagram.com": "Instagram", "twitter.com": "X / Twitter",
+    "x.com": "X / Twitter", "reddit.com": "Reddit", "tiktok.com": "TikTok",
+    "twitch.tv": "Twitch", "netflix.com": "Netflix", "spotify.com": "Spotify",
+    "discord.com": "Discord", "github.com": "GitHub", "gitlab.com": "GitLab",
+    "stackoverflow.com": "Stack Overflow", "chatgpt.com": "ChatGPT",
+    "claude.ai": "Claude", "gemini.google.com": "Gemini",
+    "docs.google.com": "Google Docs", "sheets.google.com": "Google Sheets",
+    "drive.google.com": "Google Drive", "gmail.com": "Gmail",
+    "mail.google.com": "Gmail", "calendar.google.com": "Google Calendar",
+    "meet.google.com": "Google Meet", "slack.com": "Slack",
+    "notion.so": "Notion", "figma.com": "Figma", "linear.app": "Linear",
+    "jira.com": "Jira", "atlassian.net": "Atlassian",
+    "wikipedia.org": "Wikipedia", "linkedin.com": "LinkedIn",
+    "amazon.com": "Amazon", "openai.com": "OpenAI", "google.com": "Google",
+    "bing.com": "Bing",
+}
 
 # --- Optional local AI classification -------------------------------------
 # Leave MODEL empty to disable. Set it to your locally running model (e.g.
