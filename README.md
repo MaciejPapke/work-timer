@@ -35,6 +35,15 @@ Requires Windows and Python 3.11+.
 
 ```powershell
 pip install -r requirements.txt
+python install.py            # one command: desktop shortcut + autostart + launch
+python install.py --reset    # also clear tracked data first
+python install.py --uninstall
+```
+
+`install.py` adds a desktop shortcut and a startup entry so WorkTimer launches
+minimized (tray icon) when you log in. To run it manually instead:
+
+```powershell
 python -m worktimer.main            # foreground run (useful for a first check)
 pythonw -m worktimer.main           # run without a console window
 # or double-click start_hidden.vbs
