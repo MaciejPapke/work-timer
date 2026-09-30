@@ -35,23 +35,19 @@ class Tracker:
             self._acc[key] += ms
             return
 
-        best = {}  # exe -> best state
-        for exe, state in win32util.enumerate_states():
-            if exe in config.IGNORE_EXES:
-                continue
-            prio = config.STATE_PRIORITY[state]
-            if exe not in best or prio > config.STATE_PRIORITY[best[exe]]:
-                best[exe] = state
+        # Only ever count the active (foreground) app.
+        app = win32util.foreground_exe()
+        if not app or app in config.IGNORE_EXES:
+            return
 
-        for exe, state in best.items():
-            page = url = None
-            if state == "focused" and exe in config.BROWSER_EXES:
-                entry = self.page_state.get(exe)
-                if entry:
-                    url, page = entry
-            category = classifier.classify(exe, url)
-            key = (exe, state, page, url, category)
-            self._acc[key] += ms
+        page = url = None
+        if app in config.BROWSER_EXES:
+            entry = self.page_state.get(app)
+            if entry:
+                url, page = entry
+        category = classifier.classify(app, url)
+        key = (app, "focused", page, url, category)
+        self._acc[key] += ms
 
     def run(self):
         prev = time.monotonic()
