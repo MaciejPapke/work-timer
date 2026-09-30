@@ -53,18 +53,30 @@ def insert_buckets(rows):
     conn.close()
 
 
-def aggregate(since_ts):
+def aggregate(since_ts, until_ts=None):
+    sql = (
+        "SELECT app, state, category, COALESCE(page, ''), COALESCE(url, ''),"
+        " SUM(duration_ms) AS ms FROM buckets WHERE ts >= ?"
+    )
+    params = [since_ts]
+    if until_ts is not None:
+        sql += " AND ts < ?"
+        params.append(until_ts)
+    sql += " GROUP BY app, state, category, page, url ORDER BY ms DESC"
+    conn = _connect()
+    rows = conn.execute(sql, params).fetchall()
+    conn.close()
+    return rows
+
+
+def daily_totals(since_ts, until_ts):
+    """Return (local_day_iso, category, ms) bucketed by calendar day."""
     conn = _connect()
     rows = conn.execute(
-        """
-        SELECT app, state, category, COALESCE(page, ''), COALESCE(url, ''),
-               SUM(duration_ms) AS ms
-        FROM buckets
-        WHERE ts >= ?
-        GROUP BY app, state, category, page, url
-        ORDER BY ms DESC
-        """,
-        (since_ts,),
+        "SELECT strftime('%Y-%m-%d', ts, 'unixepoch', 'localtime') AS d,"
+        " category, SUM(duration_ms) AS ms"
+        " FROM buckets WHERE ts >= ? AND ts < ? GROUP BY d, category",
+        (since_ts, until_ts),
     ).fetchall()
     conn.close()
     return rows

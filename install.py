@@ -45,10 +45,12 @@ def reset_data():
 
 
 def write_launcher():
+    # Quote the exe path inside the VBS string literal with "" escapes, so the
+    # autostart script is valid even if the path contains spaces.
     VBS.write_text(
         'Set s = CreateObject("WScript.Shell")\n'
         f's.CurrentDirectory = "{REPO}"\n'
-        f's.Run ""{pythonw()}"" -m worktimer.main, 0, False\n',
+        f's.Run """{pythonw()}"" -m worktimer.main", 0, False\n',
         encoding="ascii",
     )
 
