@@ -46,7 +46,7 @@ def foreground_exe():
 
 def idle_ms():
     """Milliseconds since the last keyboard/mouse input."""
-    return win32api.GetLastInputInfo()
+    return win32api.GetTickCount() - win32api.GetLastInputInfo()
 
 
 def enumerate_states():
